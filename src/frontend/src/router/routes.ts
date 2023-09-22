@@ -5,6 +5,7 @@ import CreateProfile from "../components/profile/CreateProfile.svelte";
 import Settings from "../components/Settings.svelte";
 import BasicLayout from "../layouts/BasicLayout.svelte";
 import { is_registered, is_not_registered } from "../store/auth";
+import WebSockets from "../WebSockets.svelte";
 
 export const ROUTES = {
   HOME: "/",
@@ -90,5 +91,9 @@ export const routes = [
       guard: () => is_registered(),
       redirect: is_not_registered() ? ROUTES.CREATE_PROFILE : ROUTES.LOGIN,
     }
+  },
+  {
+    name: "ws-dev",
+    component: WebSockets,
   },
 ]

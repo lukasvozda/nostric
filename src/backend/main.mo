@@ -95,17 +95,17 @@ shared({ caller = initializer }) actor class() = this {
                 return #ok(profile);
             };
         };
-    };  
+    };
 
     public shared (msg) func deleteProfile() : async Result.Result<(()), Error> {
 
-        if(Principal.isAnonymous(msg.caller)){ 
-            return #err(#NotAuthenticated); 
+        if(Principal.isAnonymous(msg.caller)){
+            return #err(#NotAuthenticated);
         };
 
         profiles.delete(msg.caller);
         return #ok(());
-    };      
+    };
 
     // Only the ecdsa methods in the IC management canister is required here.
     type VETKD_SYSTEM_API = actor {
@@ -164,7 +164,7 @@ shared({ caller = initializer }) actor class() = this {
             Principal.equal,
             Principal.hash,
         );
-        stableprofiles := []; 
+        stableprofiles := [];
     };
 
     public shared (msg) func getDepositAddress() : async Text {
@@ -184,7 +184,7 @@ shared({ caller = initializer }) actor class() = this {
     public shared (msg) func whoAmI() : async Principal {
         msg.caller;
     };
-    
+
     // Method for local testing purposes
     public shared (msg) func getSubaccountForPrincipal(principal : Text) : async Blob {
         let p : Principal = Principal.fromText(principal);

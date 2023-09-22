@@ -12,10 +12,15 @@
       "main": "src/backend/main.mo",
       "type": "motoko"
     },
-    "ckbtc_ledger" : {
-      "type" : "custom",
-      "candid" : "ledger.did",
-      "wasm" : "ledger_canister.wasm"
+    "relay" : {
+      "type": "rust",
+      "candid": "src/relay/relay.did",
+      "package": "relay"
+    },
+    "foreign_relay" : {
+      "type": "rust",
+      "candid": "src/relay/relay.did",
+      "package": "foreign_relay"
     },
     "frontend": {
       "dependencies": [
