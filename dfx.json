@@ -26,7 +26,8 @@
         "entrypoint": "src/frontend/public/index.html"
       },
       "source": [
-        "src/frontend/public/"
+        "src/frontend/public/",
+        "src/frontend/public/.well-known"
       ],
       "type": "assets"
     },
