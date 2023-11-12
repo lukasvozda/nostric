@@ -1,6 +1,6 @@
 # run this to get the blob of the subAccount of specific user
 # get the Principal of the logged in user from the UI
-dfx canister call backend getSubaccountForPrincipal '("x5xek-wakn3-5bwcf-pihmz-yneos-chtig-pm3dx-qct5r-qvhwm-6jjak-nqe")'
+dfx canister call backend getSubaccountForPrincipal '("zktkv-op6a5-tdzpu-jruy3-dasoe-t4opo-cytkb-ykshi-3q7lv-yyxbr-7ae")'
 
 
 # run this to make a payment locally
@@ -10,7 +10,7 @@ dfx canister call ckbtc_ledger icrc1_transfer '(
 record {
     to = record {
       owner = principal "asrmz-lmaaa-aaaaa-qaaeq-cai";
-      subaccount = opt blob "\00\00\1d\0an\fa\1b\08\afA\d9\9c4\8e\90\8f4\19\ec\d8\ef\01O\b1\85Ofy)\02\9b\02";
+      subaccount = opt blob "\00\00\1d\fe\07f<\be\89\8d1\b1\82N$\f8\e7\b8X\9a\83\85H\e8\dc>\ba\e3\17\0c~\02";
     };
     amount = 100 : nat;
   },

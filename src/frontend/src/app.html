@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+    <meta name="viewport" content="width=device-width" />
+    %sveltekit.head%
+  </head>
+  <body data-theme="skeleton">
+    <div style="display: contents" class="h-full overflow-hidden">
+      %sveltekit.body%
+    </div>
+  </body>
+</html>
+
+<style>
+  /* Write your global styles here, in PostCSS syntax */
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
+
+  html,
+  body {
+    @apply h-full overflow-hidden;
+  }
+</style>

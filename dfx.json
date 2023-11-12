@@ -6,28 +6,21 @@
       "wasm": "vetkd_system_api.wasm"
     },
     "backend": {
-      "dependencies": [
-        "vetkd_system_api",
-        "dynamic_relays"
-      ],
+      "dependencies": ["vetkd_system_api", "dynamic_relays"],
       "main": "src/backend/main.mo",
       "type": "motoko"
     },
-    "ckbtc_ledger" : {
-      "type" : "custom",
-      "candid" : "ledger.did",
-      "wasm" : "ledger_canister.wasm"
+    "ckbtc_ledger": {
+      "type": "custom",
+      "candid": "ledger.did",
+      "wasm": "ledger_canister.wasm"
     },
     "frontend": {
-      "dependencies": [
-        "backend"
-      ],
+      "dependencies": ["backend"],
       "frontend": {
-        "entrypoint": "src/frontend/public/index.html"
+        "entrypoint": "build/index.html"
       },
-      "source": [
-        "src/frontend/public/"
-      ],
+      "source": ["build/"],
       "type": "assets"
     },
     "internet_identity": {
