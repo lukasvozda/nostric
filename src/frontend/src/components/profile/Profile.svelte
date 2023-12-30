@@ -12,6 +12,8 @@
     nostric_relays_eose_count
   } from "../../store/nostric";
   import { Icon } from "svelte-feathers";
+  import {Actor, HttpAgent} from "@dfinity/agent";
+  import {idlFactory} from "../../lib/candb_file_upload_declarations";
 
   let user : NDKUser = null;
   let profile : NDKUserProfile = null;
@@ -75,6 +77,80 @@
     }
     initialized = true;
   });
+
+  const actor = async ()  => {
+    let ic_network = "http://localhost:8000";
+    let local = true;
+    let persist_keys = true;
+
+    if (process.env.DFX_NETWORK === "ic") {
+      ic_network = "https://icp0.io";
+      local = false;
+    }
+
+    const agent = new HttpAgent({host: ic_network});
+    if (process.env.DFX_NETWORK !== "ic") {
+      await agent.fetchRootKey();
+    }
+
+    const actor = await Actor.createActor(idlFactory, {
+      agent,
+      canisterId: "by6od-j4aaa-aaaaa-qaadq-cai",
+    });
+
+    return actor;
+  }
+
+
+  let file;
+  let imgBlob;
+
+  const handleUploadSubmit = async (event) => {
+    event.preventDefault();
+    blobFromFile().then((blob) => {
+      imgBlob = blob;
+    });
+    let new_actor = await actor();
+    await new_actor.upload_wrapper("TEST", imgBlob);
+    file = undefined;
+  };
+
+  const handleDownloadButton = async () => {
+    let new_actor = await actor();
+    let result = await new_actor.download_wrapper("TEST");
+    downloadUint8ArrayAsJpeg(result, "test.jpeg");
+  };
+
+  export const blobFromFile = async () => {
+    let input = <HTMLInputElement>document.getElementById("image");
+    if (input && input.files && input.files[0]) {
+      let ab = await input.files[0].arrayBuffer();
+      return [...new Uint8Array(ab)];
+    } else {
+      return null;
+    }
+  };
+
+  function downloadUint8ArrayAsJpeg(uint8Array, filename) {
+    // Create a Blob from the Uint8Array
+    const blob = new Blob([uint8Array], { type: 'image/jpeg' });
+
+    // Create a URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element and set the download attributes
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = filename;
+
+    // Append the anchor to the body, click it, and then remove it
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+
+    // Release the created object URL
+    URL.revokeObjectURL(url);
+  }
 
 </script>
 
@@ -181,7 +257,12 @@
       <label for="add-followees-drawer"  class="drawer-overlay"></label>
       <div id="drawer-bottom-add" class="fixed bottom-0 h-2/3 left-0 right-0 z-40 bg-base-100 mx-10 rounded-2xl p-10 overflow-y-auto transition-transform transform-none" tabindex="-1" aria-labelledby="drawer-bottom-label">
         <div class="grid grid-cols-6">
-          add images here todo
+          <div>
+            <label>Choose a file to upload:</label>
+            <input type="file" accept="image/*" bind:value={file} id="image" />
+            <button on:click={handleUploadSubmit} disabled={!file}>Upload</button>
+            <button on:click={handleDownloadButton}>Download</button>
+          </div>
         </div>
       </div>
     </div>

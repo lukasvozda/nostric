@@ -1,0 +1,133 @@
+type Tree = 
+ variant {
+   leaf;
+   node:
+    record {
+      Color;
+      Tree;
+      record {
+        text;
+        opt AttributeValueRBTreeValue;
+      };
+      Tree;
+    };
+ };
+type ScanOptions = 
+ record {
+   ascending: opt bool;
+   limit: nat;
+   pk: PK;
+   skLowerBound: SK;
+   skUpperBound: SK;
+ };
+type SK = text;
+type RemoveOptions = 
+ record {
+   pk: PK;
+   sk: SK;
+ };
+type PropertyShared = 
+ record {
+   immutable: bool;
+   name: text;
+   value: CandyShared;
+ };
+type PK = text;
+type File = 
+ record {
+   content: blob;
+   name: text;
+ };
+type Color = 
+ variant {
+   B;
+   R;
+ };
+type CandyShared = 
+ variant {
+   Array: vec CandyShared;
+   Blob: blob;
+   Bool: bool;
+   Bytes: vec nat8;
+   Class: vec PropertyShared;
+   Float: float64;
+   Floats: vec float64;
+   Int: int;
+   Int16: int16;
+   Int32: int32;
+   Int64: int64;
+   Int8: int8;
+   Ints: vec int;
+   Map: vec record {
+              text;
+              CandyShared;
+            };
+   Nat: nat;
+   Nat16: nat16;
+   Nat32: nat32;
+   Nat64: nat64;
+   Nat8: nat8;
+   Nats: vec nat;
+   Option: opt CandyShared;
+   Principal: principal;
+   Set: vec CandyShared;
+   Text: text;
+   ValueMap: vec record {
+                   CandyShared;
+                   CandyShared;
+                 };
+ };
+type AttributeValueRBTreeValue = 
+ variant {
+   arrayBool: vec bool;
+   arrayFloat: vec float64;
+   arrayInt: vec int;
+   arrayText: vec text;
+   "blob": blob;
+   "bool": bool;
+   candy: CandyShared;
+   float: float64;
+   "int": int;
+   "text": text;
+   tuple: vec AttributeValuePrimitive;
+ };
+type AttributeValuePrimitive = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "text": text;
+ };
+type AttributeValue = 
+ variant {
+   arrayBool: vec bool;
+   arrayFloat: vec float64;
+   arrayInt: vec int;
+   arrayText: vec text;
+   "blob": blob;
+   "bool": bool;
+   candy: CandyShared;
+   float: float64;
+   "int": int;
+   "text": text;
+   tree: Tree;
+   tuple: vec AttributeValuePrimitive;
+ };
+type AttributeKey = text;
+service : {
+  create: (File) -> ();
+  download_wrapper: (text) -> (blob);
+  get: (text) -> (opt File) query;
+  remove: (RemoveOptions) -> (opt File);
+  scan: (ScanOptions) -> (vec opt File) query;
+  update:
+   (record {
+      attributesToUpdate: vec record {
+                                AttributeKey;
+                                AttributeValue;
+                              };
+      pk: PK;
+      sk: SK;
+    }) -> (opt File);
+  upload_wrapper: (text, blob) -> ();
+}
