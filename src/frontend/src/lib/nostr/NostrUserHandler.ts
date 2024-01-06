@@ -2,7 +2,7 @@ import {
   NDKEvent,
   NDKKind,
   NDKPrivateKeySigner,
-  NDKUser,
+  NDKUser
 } from "@nostr-dev-kit/ndk";
 
 import type {
@@ -10,6 +10,7 @@ import type {
   NDKTag,
   NDKUserProfile,
   NDKRelayList,
+  NDKRelayUrl,
 } from "@nostr-dev-kit/ndk";
 
 import { nostrHandler, Reactions } from "$lib/nostr";
@@ -64,8 +65,9 @@ export class NostrUserHandler {
 
     let userPreferredRelays: NDKRelayList | undefined =
       await this.nostrUser.relayList();
+    
     if (userPreferredRelays) {
-      for (let relay in userPreferredRelays.relays) {
+      for (let relay of userPreferredRelays.relays) {
         nostrHandler.addRelay(relay);
       }
     }
@@ -117,6 +119,39 @@ export class NostrUserHandler {
   public getUser(): NDKUser | undefined {
     return this.nostrUser;
   }
+  
+  /**
+   * Add new relay to user's relay metadata list, as per NIP-65
+   *
+   * @param url - The url of the relay to add
+   */
+  public async addUserPreferredRelay(url : NDKRelayUrl) : Promise<void> {
+    let userPreferredRelays: NDKRelayList | undefined = await this.nostrUser.relayList();
+    let relayTags : NDKTag[] = [];
+    
+    if (userPreferredRelays) {
+      relayTags = userPreferredRelays.getMatchingTags("r");
+    }
+    if (!relayTags.find((tag : NDKTag) => tag[1] === url)) {
+      relayTags.push(["r", url]);
+      await this.createAndPublishEvent("", NDKKind.RelayList, relayTags);
+    }
+  }
+  
+  /**
+   * Removes a relay from user's relay metadata list, as per NIP-65
+   *
+   * @param url - The url of the relay to remove
+   */
+  public async removeUserPreferredRelay(url : NDKRelayUrl) : Promise<void> {
+    let userPreferredRelays: NDKRelayList | undefined = await this.nostrUser.relayList();
+    let relayTags : NDKTag[] = [];
+    if (userPreferredRelays) {
+      relayTags = userPreferredRelays.getMatchingTags("r");
+      relayTags = relayTags.filter((tag : NDKTag) => tag[1] !== url);
+      await this.createAndPublishEvent("", NDKKind.RelayList, relayTags);
+    }
+  }
 
   /**
    * Updates the current active user profile info
@@ -127,9 +162,7 @@ export class NostrUserHandler {
     this.nostrUser.profile = profile;
     await this.nostrUser.publish();
   }
-
-  public async addUserPreferredRelay(url: string): Promise<void> {}
-
+  
   /**
    * @returns private key of the current active Nostr user
    */

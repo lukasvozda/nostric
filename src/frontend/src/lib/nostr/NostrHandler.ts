@@ -9,7 +9,6 @@ import NDK, {
   NDKKind,
   NDKPrivateKeySigner,
   NDKRelay,
-  NDKRelayStatus,
   NDKSubscription,
   NDKUser,
 } from "@nostr-dev-kit/ndk";
@@ -40,7 +39,7 @@ export class NostrHandler extends EventEmitter {
 
   public async startConnection(): Promise<void> {
     await this.nostrKit.connect();
-    relays.fill([...this.nostrKit.pool.relays.values()]);
+    relays.fill(this.listRelays());
   }
 
   public setSigner(signer: NDKPrivateKeySigner): void {
@@ -55,23 +54,27 @@ export class NostrHandler extends EventEmitter {
     // with this we do not need to check whether it already exists,
     // otherwise we would have used addRelay method
     this.nostrKit?.pool.getRelay(url);
-    relays.fill([...this.nostrKit.pool.relays.values()]);
+    relays.fill(this.listRelays());
   }
-
+  
   public removeRelay(url: NDKRelayUrl): void {
     this.nostrKit?.pool.removeRelay(url);
-    relays.fill([...this.nostrKit.pool.relays.values()]);
+    relays.fill(this.listRelays());
   }
 
   public async reconnectRelay(relay: NDKRelay): Promise<void> {
+    // this magic is here because the NDK relay connectivity class
+    // does not every emit change of status, and we must check it manually.
     relay.disconnect();
-    relays.updateRelayStatus(relay.url, NDKRelayStatus.DISCONNECTED);
-    setTimeout(async (): Promise<void> => {
-      await relay.connect();
-      setTimeout(() => {
-        relays.fill(this.listRelays());
+    relays.updateRelayStatus(relay.url, relay.connectivity.status);
+    setTimeout(async () : Promise<void> => {
+      try {
+        await relay.connect();
+      } catch {
+        relays.updateRelayStatus(relay.url, relay.connectivity.status);
+      } finally {
         this.emit("reconnect-finished");
-      }, 1000);
+      }
     }, 1000);
   }
 
