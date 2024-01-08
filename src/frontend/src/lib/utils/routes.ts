@@ -13,6 +13,8 @@ export const ROUTES = {
   INBOX: "inbox",
   SEARCH: "search",
   IMAGES: "images",
+  FOLLOWERS: "followers",
+  FOLLOWING: "following"
 };
 
 export const get_path = (...names: string[]): string => {
