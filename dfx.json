@@ -21,6 +21,17 @@
       },
       "source": ["build/"],
       "type": "assets"
+    },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/download/release-2023-02-12_2/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/download/release-2023-02-12_2/internet_identity_dev.wasm",
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "frontend": {}
     }
   },
   "defaults": {
@@ -32,7 +43,7 @@
   "dfx": "0.15.2",
   "networks": {
     "local": {
-      "bind": "127.0.0.1:8000",
+      "bind": "localhost:8000",
       "type": "ephemeral"
     }
   },
