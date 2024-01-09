@@ -21,7 +21,7 @@
     "prettier": "prettier --check \"src/**/*.ts\"",
     "prettier-fix": "prettier --write \"src/**/*.ts\"",
     "prebuild": "npm run generate",
-    "generate": "dfx generate && node ./update.types.mjs && npm run format"
+    "generate": "dfx generate && node ./update.types.mjs"
   },
   "devDependencies": {
     "@dfinity/identity-secp256k1": "^0.19.3",

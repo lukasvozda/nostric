@@ -32,7 +32,7 @@ export class NostrHandler extends EventEmitter {
 
   constructor() {
     super();
-    let options: NDKConstructorParams = {
+    const options: NDKConstructorParams = {
       explicitRelayUrls: this.explicitRelays,
     };
     this.nostrKit = new NDK(options);
@@ -76,7 +76,10 @@ export class NostrHandler extends EventEmitter {
   }
 
   public listRelays(): NDKRelay[] {
-    return [...this.nostrKit?.pool.relays.values()];
+    if (this.nostrKit && this.nostrKit.pool && this.nostrKit.pool.relays) {
+      return [...this.nostrKit.pool.relays.values()];
+    }
+    return [];
   }
 
   public async addSubscription(filter: NDKFilter): Promise<void> {
@@ -85,8 +88,8 @@ export class NostrHandler extends EventEmitter {
      *
      * @param filter - Filter for the subscription
      */
-    let options: NDKSubscriptionOptions = { closeOnEose: false };
-    let subscription: NDKSubscription = this.nostrKit.subscribe(
+    const options: NDKSubscriptionOptions = { closeOnEose: false };
+    const subscription: NDKSubscription = this.nostrKit.subscribe(
       filter,
       options,
     );
@@ -106,20 +109,22 @@ export class NostrHandler extends EventEmitter {
    * Clears all active subscriptions and stored events
    */
   public async clearSubscriptions(): Promise<void> {
-    for (let subscription of this.subscriptions) {
+    for (const subscription of this.subscriptions) {
       try {
         subscription.stop();
-      } catch {}
+      } catch {
+        console.log("subscription: error");
+      }
     }
     events.clear();
   }
 
   public async fetchRandomEvents(): Promise<NDKEvent[]> {
-    let filters: NDKFilter = {
+    const filters: NDKFilter = {
       kinds: [NDKKind.Text],
       limit: 5,
     };
-    let events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
+    const events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
     return [...events];
   }
 
@@ -128,22 +133,22 @@ export class NostrHandler extends EventEmitter {
   }
 
   public async fetchEventReplies(event: NDKEvent): Promise<NDKEvent[]> {
-    let filters: NDKFilter = {
+    const filters: NDKFilter = {
       kinds: [NDKKind.Text],
       "#e": [event.id, "", "root"],
       limit: 5,
     };
-    let events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
+    const events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
     return [...events];
   }
 
   public async fetchEventsByAuthorPubkey(pubkey: string): Promise<NDKEvent[]> {
-    let filters: NDKFilter = {
+    const filters: NDKFilter = {
       kinds: [NDKKind.Text],
       authors: [pubkey],
       limit: 5,
     };
-    let events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
+    const events: Set<NDKEvent> = await this.nostrKit.fetchEvents(filters);
     return [...events];
   }
 
@@ -154,8 +159,8 @@ export class NostrHandler extends EventEmitter {
     privateKey: string;
     publicKey: string;
   }> {
-    let signer: NDKPrivateKeySigner = NDKPrivateKeySigner.generate();
-    let user: NDKUser = await signer.user();
+    const signer: NDKPrivateKeySigner = NDKPrivateKeySigner.generate();
+    const user: NDKUser = await signer.user();
     return {
       privateKey: signer.privateKey,
       publicKey: user.pubkey,
@@ -168,8 +173,8 @@ export class NostrHandler extends EventEmitter {
   public async generatePublicKeyFromPrivateKey(
     privateKey: string,
   ): Promise<string> {
-    let signer: NDKPrivateKeySigner = new NDKPrivateKeySigner(privateKey);
-    let user: NDKUser = await signer.user();
+    const signer: NDKPrivateKeySigner = new NDKPrivateKeySigner(privateKey);
+    const user: NDKUser = await signer.user();
     return user.pubkey;
   }
 
@@ -180,7 +185,7 @@ export class NostrHandler extends EventEmitter {
   public async fetchUserProfileByPublicKey(
     publicKey: string,
   ): Promise<NDKUser> {
-    let user: NDKUser = new NDKUser({ pubkey: publicKey });
+    const user: NDKUser = new NDKUser({ pubkey: publicKey });
     user.ndk = this.nostrKit;
     await user.fetchProfile();
     return user;
@@ -191,18 +196,18 @@ export class NostrHandler extends EventEmitter {
    * @returns An instance of NDKUser matching the public key, with their profile.
    */
   public async searchByQuery(query: string): Promise<UsersObject> {
-    let events: Set<NDKEvent> = await this.nostrKit.fetchEvents({
+    const events: Set<NDKEvent> = await this.nostrKit.fetchEvents({
       search: query,
       limit: 15,
       kinds: [NDKKind.Metadata],
     });
 
-    let users: UsersObject = {};
+    const users: UsersObject = {};
 
     for (const event of events) {
-      let user: NDKUser = new NDKUser({ pubkey: event.pubkey });
+      const user: NDKUser = new NDKUser({ pubkey: event.pubkey });
       user.ndk = this.nostrKit;
-      let pubkey: string = user.pubkey;
+      const pubkey: string = user.pubkey;
 
       // we already have this user in this list
       if (pubkey in users) {

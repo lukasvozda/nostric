@@ -1,0 +1,7 @@
+node_modules/
+.dfx/
+.svelte-kit/
+build
+src/declarations
+.idea/
+.mops/

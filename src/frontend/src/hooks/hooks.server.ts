@@ -9,8 +9,8 @@ export const handle: Handle = async ({ event, resolve }): Promise<Response> => {
   if (building) {
     return resolve(event);
   }
-  
-  let currentPath: string = event.url.pathname;
+
+  const currentPath: string = event.url.pathname;
   const { cookies } = event;
   const userStatus: string | undefined = cookies.get("auth");
 

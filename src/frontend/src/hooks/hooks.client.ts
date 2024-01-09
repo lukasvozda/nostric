@@ -6,7 +6,7 @@ import { authUser } from "$lib/stores/Auth";
 const privateKey: string | null = get(localKeyStorage);
 
 if (privateKey) {
-  let nostrUser: NostrUserHandler = NostrUserHandler.getInstance(privateKey);
+  const nostrUser: NostrUserHandler = NostrUserHandler.getInstance(privateKey);
   nostrUser.initExistingUser().then(() => {
     authUser.setNostrUserHandler(nostrUser);
     authUser.setNostrAuthenticated();

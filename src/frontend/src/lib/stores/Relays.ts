@@ -16,8 +16,8 @@ function getRelays() {
   const { subscribe, update, set } = relays;
 
   const fill = (relays: NDKRelay[]): void => {
-    let parsed: RelayObjects = {};
-    for (let relay of relays) {
+    const parsed: RelayObjects = {};
+    for (const relay of relays) {
       parsed[relay.url] = {
         object: relay,
         status: relay.status,
